@@ -2,12 +2,11 @@ from urllib.request import urlopen
 import json
 import streamlit as st
 from influxdb_client.client import influxdb_client
-import config
 
-bucket = config.bucket
-org = config.org
-token = config.token
-url = config.url
+bucket = st.secrets["BUCKET"]
+org = st.secrets["ORG"]
+token = st.secrets["TOKEN"]
+url = st.secrets["URL"]
 
 queryDiaria = f'from(bucket:"{bucket}")\
     |> range(start: -1d)\
