@@ -9,7 +9,7 @@ token = st.secrets["TOKEN"]
 url = st.secrets["URL"]
 
 queryDiaria = f'from(bucket:"{bucket}")\
-    |> range(start: -1d)\
+    |> range(start: -3h)\
     |> window(every: 1h)\
     |> mean()\
     |> filter(fn:(r) => r._measurement == "Aforo")\
@@ -20,11 +20,15 @@ queryDiaria = f'from(bucket:"{bucket}")\
     |> timeShift(duration: 1h, columns: ["_time"])'
 
 query5minutos = f'from(bucket: "{bucket}")\
-    |> range(start: -1d)\
+    |> range(start: -1h)\
     |> filter(fn: (r) => r._measurement == "Aforo") \
     |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")\
     |> keep(columns: ["cantidad", "_time"]) \
     |> timeShift(duration: 2h, columns: ["_time"])'
+
+queryDatos = f'from(bucket: "{bucket}")\
+    |> range(start: 0)\
+    |> filter(fn: (r) => r._measurement == "Aforo")'
 
 
 def getData(query):
@@ -62,7 +66,6 @@ st.markdown(f'<h1 style="text-align: center; color:{color};">{cant} / 50</h1>', 
 data = getData(queryDiaria)
 data['hour'] = data['_time'].dt.hour
 data.rename(columns={"_time": "Horas", "cantidad": "Cantidad"}, inplace=True)
-data.to_csv("prueba.csv", index=False)
 
 st.title("Media de cada hora durante el dia")
 st.bar_chart(data, x="Horas", y="Cantidad")
@@ -74,15 +77,15 @@ data5minutos = data5minutos.rename(columns={"_time": "Date-Time", "cantidad": "C
 st.title("Evolucion cada 5 min")
 element = st.line_chart(data5minutos, x="Date-Time", y="Cantidad")
 
-
 # Sidebar
 @st.cache_data
 def convert_df(df):
     return df.to_csv(index=False).encode('utf-8')
 
 
-csv = convert_df(data)
-json = data.to_json()
+datos = getData(queryDatos)
+csv = convert_df(datos)
+json = datos.to_json()
 
 with st.sidebar:
     st.text("Descargar datos en formato CSV:")

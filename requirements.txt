@@ -1,2 +1,2 @@
 influxdb_client
-
+streamlit~=1.24.0
