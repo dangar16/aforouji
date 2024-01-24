@@ -2,6 +2,10 @@ from urllib.request import urlopen
 import json
 import streamlit as st
 from influxdb_client.client import influxdb_client
+import warnings
+from influxdb_client.client.warnings import MissingPivotFunction
+
+warnings.simplefilter("ignore", MissingPivotFunction)
 
 bucket = st.secrets["BUCKET"]
 org = st.secrets["ORG"]
@@ -28,7 +32,7 @@ query5minutos = f'from(bucket: "{bucket}")\
 
 queryDatos = f'from(bucket: "{bucket}")\
     |> range(start: 0)\
-    |> filter(fn: (r) => r._measurement == "Aforo")'
+    |> filter(fn: (r) => r._measurement == "Aforo")' \
 
 
 def getData(query):
@@ -77,8 +81,8 @@ data5minutos = data5minutos.rename(columns={"_time": "Date-Time", "cantidad": "C
 st.title("Evolucion cada 5 min")
 element = st.line_chart(data5minutos, x="Date-Time", y="Cantidad")
 
+
 # Sidebar
-@st.cache_data
 def convert_df(df):
     return df.to_csv(index=False).encode('utf-8')
 
