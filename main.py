@@ -71,6 +71,7 @@ else:
 st.markdown(f'<h1 style="text-align: center; color:{color};">{cant} / 50</h1>', unsafe_allow_html=True)
 
 # Media por hora
+
 data = getData(queryDiaria)
 data['hour'] = data['_time'].dt.hour
 data.rename(columns={"_time": "Horas", "cantidad": "Cantidad"}, inplace=True)
