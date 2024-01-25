@@ -1,9 +1,15 @@
+from datetime import datetime
+import time
 from urllib.request import urlopen
 import json
 import streamlit as st
 from influxdb_client.client import influxdb_client
 import warnings
+import influxdb_client
 from influxdb_client.client.warnings import MissingPivotFunction
+from influxdb_client.client.write_api import SYNCHRONOUS
+
+from writter import Programa
 
 warnings.simplefilter("ignore", MissingPivotFunction)
 
@@ -33,7 +39,6 @@ query5minutos = f'from(bucket: "{bucket}")\
 queryDatos = f'from(bucket: "{bucket}")\
     |> range(start: 0)\
     |> filter(fn: (r) => r._measurement == "Aforo")' \
-
 
 def getData(query):
     client = influxdb_client.InfluxDBClient(
@@ -104,3 +109,6 @@ with st.sidebar:
         json,
         "datos.json"
     )
+
+obj = Programa()
+obj.introducirDatos()
