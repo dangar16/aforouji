@@ -34,7 +34,7 @@ query5minutos = f'from(bucket: "{bucket}")\
     |> filter(fn: (r) => r._measurement == "Aforo") \
     |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")\
     |> keep(columns: ["cantidad", "_time"]) \
-    |> timeShift(duration: 2h, columns: ["_time"])'
+    |> timeShift(duration: 1h, columns: ["_time"])'
 
 queryDatos = f'from(bucket: "{bucket}")\
     |> range(start: 0)\
