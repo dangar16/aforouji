@@ -19,7 +19,7 @@ token = st.secrets["TOKEN"]
 url = st.secrets["URL"]
 
 queryDiaria = f'from(bucket:"{bucket}")\
-    |> range(start: -3h)\
+    |> range(start: -12h)\
     |> window(every: 1h)\
     |> mean()\
     |> filter(fn:(r) => r._measurement == "Aforo")\
@@ -29,7 +29,7 @@ queryDiaria = f'from(bucket:"{bucket}")\
     |> keep(columns: ["cantidad","_time"])'
 
 query5minutos = f'from(bucket: "{bucket}")\
-    |> range(start: -1h)\
+    |> range(start: -12h)\
     |> filter(fn: (r) => r._measurement == "Aforo") \
     |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")\
     |> keep(columns: ["cantidad", "_time"]) \
@@ -77,7 +77,7 @@ data['hour'] = data['_time'].dt.hour
 data.rename(columns={"_time": "Horas", "cantidad": "Cantidad"}, inplace=True)
 
 st.title("Media de cada hora durante el dia")
-st.bar_chart(data, x="Horas", y="Cantidad")
+st.area_chart(data, x="Horas", y="Cantidad")
 
 # Gente cada 5 minutos
 data5minutos = getData(query5minutos)
