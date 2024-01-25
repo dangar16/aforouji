@@ -26,8 +26,7 @@ queryDiaria = f'from(bucket:"{bucket}")\
     |> duplicate(column: "_stop", as: "_time")\
     |> window(every: inf)\
     |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value") \
-    |> keep(columns: ["cantidad","_time"])\
-    |> timeShift(duration: 1h, columns: ["_time"])'
+    |> keep(columns: ["cantidad","_time"])'
 
 query5minutos = f'from(bucket: "{bucket}")\
     |> range(start: -1h)\
@@ -84,7 +83,7 @@ data5minutos = getData(query5minutos)
 data5minutos = data5minutos.rename(columns={"_time": "Date-Time", "cantidad": "Cantidad"})
 
 st.title("Evolucion cada 5 min")
-element = st.line_chart(data5minutos, x="Date-Time", y="Cantidad")
+element = st.line_chart(data5minutos, x="Date-Time", y="Cantidad", use_container_width=True)
 
 
 # Sidebar
