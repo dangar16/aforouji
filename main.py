@@ -1,5 +1,3 @@
-from datetime import datetime
-import time
 from urllib.request import urlopen
 import json
 import streamlit as st
@@ -7,7 +5,6 @@ from influxdb_client.client import influxdb_client
 import warnings
 import influxdb_client
 from influxdb_client.client.warnings import MissingPivotFunction
-from influxdb_client.client.write_api import SYNCHRONOUS
 
 from writter import Programa
 
@@ -37,7 +34,8 @@ query5minutos = f'from(bucket: "{bucket}")\
 
 queryDatos = f'from(bucket: "{bucket}")\
     |> range(start: 0)\
-    |> filter(fn: (r) => r._measurement == "Aforo")' \
+    |> filter(fn: (r) => r._measurement == "Aforo")'
+
 
 def getData(query):
     client = influxdb_client.InfluxDBClient(
@@ -94,7 +92,6 @@ def convert_df(df):
 
 datos = getData(queryDatos)
 csv = convert_df(datos)
-json = datos.to_json()
 
 with st.sidebar:
     st.text("Descargar datos en formato CSV:")
@@ -102,12 +99,6 @@ with st.sidebar:
         "DESCARGAR CSV",
         csv,
         "datos.csv"
-    )
-    st.text("Descargar datos en formato JSON:")
-    st.download_button(
-        "DESCARGAR JSON",
-        json,
-        "datos.json"
     )
 
 obj = Programa()
