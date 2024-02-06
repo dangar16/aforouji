@@ -16,7 +16,7 @@ token = st.secrets["TOKEN"]
 url = st.secrets["URL"]
 
 queryDiaria = f'from(bucket:"{bucket}")\
-    |> range(start: -12h)\
+    |> range(start: -1h)\
     |> window(every: 1h)\
     |> mean()\
     |> filter(fn:(r) => r._measurement == "Aforo")\
@@ -26,7 +26,7 @@ queryDiaria = f'from(bucket:"{bucket}")\
     |> keep(columns: ["cantidad","_time"])'
 
 query5minutos = f'from(bucket: "{bucket}")\
-    |> range(start: -12h)\
+    |> range(start: -1h)\
     |> filter(fn: (r) => r._measurement == "Aforo") \
     |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")\
     |> keep(columns: ["cantidad", "_time"]) \
